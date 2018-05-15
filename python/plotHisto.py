@@ -1,6 +1,8 @@
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
+import ROOT as rt
+
 
 def mean(x, y):
     return x.dot(y)/y.sum()
@@ -13,7 +15,7 @@ def std(x, y):
 x = []
 y = []
 
-with open('/Users/cmorgoth/HistogramsfromScope/May2/58kV_Na22_Run2_20k_new_btl_assembly_biggerHole.csv') as csvfile:
+with open('/Users/cmorgoth/Downloads/Na22_ORKA_No_Wrapping_70V.csv') as csvfile:
     spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
     for row in spamreader:
 #        print ', '.join(row)
@@ -22,8 +24,11 @@ with open('/Users/cmorgoth/HistogramsfromScope/May2/58kV_Na22_Run2_20k_new_btl_a
 
     #print x,y
     width = x[1]-x[0]
+    print len(x),x[0],x[len(x)-1]
+    histo = rt.TH1F("histo", "histo", len(x),x[0]*1e9,x[len(x)-1]*1e9)
     x = np.asarray(x)
     y = np.asarray(y)
+
     fig, ax = plt.subplots(figsize=(8, 6))
     plt.bar(x,y,width)
     plt.xlabel('time [ps]')
@@ -45,6 +50,17 @@ with open('/Users/cmorgoth/HistogramsfromScope/May2/58kV_Na22_Run2_20k_new_btl_a
     print("Mean and std of simulated data histogram: {:.3f}, {:.3f}".format(
         mean(centers, counts), std(centers, counts)))
 
+    for ii in range(len(x)):
+        #print ii, x[ii],y[ii]
+        histo.SetBinContent(ii+1,y[ii])
+
+
+    cv = rt.TCanvas("cv", "cv", 800,600)
+    histo.Draw("HISTO")
+    cv.SaveAs("test.pdf")
+    f = rt.TFile("Na_22_No_Wrapping.root", "RECREATE")
+    histo.Write("Na_22_No_Wrapping")
+    f.Close()
     #reader = csv.DictReader(csvfile)
     #for row in reader:
     #    print row
