@@ -15,8 +15,9 @@ def std(x, y):
 x = []
 y = []
 
-with open('/Users/cmorgoth/Downloads/Na22_ORKA_No_Wrapping_70V.csv') as csvfile:
-    spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+with open('Entanglement_TagsHistogram_Laser490p4_0.txt') as csvfile:
+    #spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+    spamreader = csv.reader(csvfile, delimiter=';', quotechar='|')
     for row in spamreader:
 #        print ', '.join(row)
         x.append(float(row[0]))
@@ -25,7 +26,7 @@ with open('/Users/cmorgoth/Downloads/Na22_ORKA_No_Wrapping_70V.csv') as csvfile:
     #print x,y
     width = x[1]-x[0]
     print len(x),x[0],x[len(x)-1]
-    histo = rt.TH1F("histo", "histo", len(x),x[0]*1e9,x[len(x)-1]*1e9)
+    histo = rt.TH1F("histo", "histo", len(x),x[0]*1e12,x[len(x)-1]*1e12)
     x = np.asarray(x)
     y = np.asarray(y)
 
@@ -56,10 +57,15 @@ with open('/Users/cmorgoth/Downloads/Na22_ORKA_No_Wrapping_70V.csv') as csvfile:
 
 
     cv = rt.TCanvas("cv", "cv", 800,600)
+    f1 = rt.TF1("f1", "gaus", x[0]*1e12,x[len(x)-1]*1e12)
+    histo.Fit("f1")
     histo.Draw("HISTO")
+    f1.Draw("same")
+    #rt.gStyle.SetOptStat(1111111111)
+    rt.gStyle.SetOptFit()
     cv.SaveAs("test.pdf")
-    f = rt.TFile("Na_22_No_Wrapping.root", "RECREATE")
-    histo.Write("Na_22_No_Wrapping")
+    f = rt.TFile("Poisson.root", "RECREATE")
+    histo.Write("Poisson")
     f.Close()
     #reader = csv.DictReader(csvfile)
     #for row in reader:
